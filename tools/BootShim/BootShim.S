@@ -44,6 +44,12 @@ _StackSize:
 	.quad UEFI_SIZE
 
 _Start:
+	/* Zero shared cursor struct at 0x9042C000 so warm boots start at (0,0) */
+	movz	x7, #0xC000
+	movk	x7, #0x9042, lsl #16
+	str	xzr, [x7]
+	str	xzr, [x7, #8]
+
 	/* Checkpoint 1: BootShim Entry from lk2nd (Paint 40 rows BLUE) */
 	movz	x7, #0x9000, lsl #16
 	movz	x8, #0x00FF

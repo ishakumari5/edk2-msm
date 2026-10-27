@@ -114,6 +114,21 @@ PrePiMain(
   DEBUG((EFI_D_ERROR, "DecompressFirstFv Out: %r\n", Status));
   ASSERT_EFI_ERROR (Status);
 
+  // Invalidate the raw FVMAIN_COMPACT FV HOB (0x9C000000) so DXE Core does not attempt
+  // to mount and dispatch the compressed container. DXE Core will ONLY consume the decompressed FVMAIN.
+  {
+    EFI_PEI_HOB_POINTERS FvHobPtr;
+    FvHobPtr.Raw = GetHobList ();
+    while ((FvHobPtr.Raw = GetNextHob (EFI_HOB_TYPE_FV, FvHobPtr.Raw)) != NULL) {
+      if (FvHobPtr.FirmwareVolume->BaseAddress == PcdGet64 (PcdFdBaseAddress)) {
+        DEBUG ((EFI_D_ERROR, "Invalidating raw FV HOB at 0x%llx (FVMAIN_COMPACT) for DXE Core\n", FvHobPtr.FirmwareVolume->BaseAddress));
+        FvHobPtr.Header->HobType = EFI_HOB_TYPE_UNUSED;
+        break;
+      }
+      FvHobPtr.Raw = GET_NEXT_HOB (FvHobPtr);
+    }
+  }
+
   // Checkpoint 7: DXE Decompressed, jumping to DXE Core (White indicator at rows 8-12)
   EarlyPaintCheckpoint(8, 4, 0x00FFFFFF);
 
