@@ -17,6 +17,9 @@
   GCC:*_*_AARCH64_CC_FLAGS = -DENABLE_SIMPLE_INIT
 
 [PcdsFixedAtBuild.common]
+  gEfiMdeModulePkgTokenSpaceGuid.PcdImageProtectionPolicy|0x00000000
+  gEfiMdeModulePkgTokenSpaceGuid.PcdDxeNxMemoryProtectionPolicy|0x00000000
+
   gQcomTokenSpaceGuid.PcdMipiFrameBufferWidth|720
   gQcomTokenSpaceGuid.PcdMipiFrameBufferHeight|1520
 
